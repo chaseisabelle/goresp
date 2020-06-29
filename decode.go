@@ -7,17 +7,33 @@ import (
 )
 
 func Decode(bs []byte) ([]Value, error) {
-	_, vs, e := decode(0, bs)
+	_, vs, e := decode(0, bs, -1)
 
 	return vs, e
 }
 
-func decode(i int, bs []byte) (int, []Value, error) {
+func decode(i int, bs []byte, m int) (int, []Value, error) {
+	if m < -1 {
+		return i, nil, fmt.Errorf("invalid max values: %d", m)
+	}
+
 	vs := make([]Value, 0)
 	l := len(bs)
 	s := 0
 
 	for i := i; i < l; i++ {
+		t := len(vs)
+
+		if m != -1 {
+			if t > m {
+				return i - 1, nil, fmt.Errorf("exceeded max values: %d", m)
+			}
+
+			if t == m {
+				return i - 1, vs, nil
+			}
+		}
+
 		b := bs[i]
 
 		var v Value
@@ -216,6 +232,10 @@ func decodeBulkString(i int, bs []byte) (int, *BulkString, *Null, error) {
 				return i, nil, nil, badLen("failed to parse bulk string length", e)
 			}
 
+			if l == -1 {
+				return i, nil, NewNull(), nil
+			}
+
 			t = make([]byte, 0)
 			s = 3
 		case 3:
@@ -227,10 +247,6 @@ func decodeBulkString(i int, bs []byte) (int, *BulkString, *Null, error) {
 		case 4:
 			if b == '\n' {
 				c := len(t)
-
-				if l == -1 && c != 0 {
-					return i, nil, nil, fmt.Errorf("non-empty null bulk string: length %d", c)
-				}
 
 				if l != c {
 					return i, nil, nil, fmt.Errorf("bulk string length mismatch: expected %d, parsed %d", l, c)
@@ -244,10 +260,6 @@ func decodeBulkString(i int, bs []byte) (int, *BulkString, *Null, error) {
 		default:
 			return i, nil, nil, fmt.Errorf("failed to parse bulk string: invalid state %d", s)
 		}
-	}
-
-	if s == 3 && l == -1 {
-		return i, nil, NewNull(), nil
 	}
 
 	return len(bs), nil, nil, badEOI("failed to parse bulk string")
@@ -335,7 +347,7 @@ func decodeArray(i int, bs []byte) (int, *Array, error) {
 
 			s = 3
 		case 3:
-			i, vs, e := decode(i, bs)
+			i, vs, e := decode(i, bs, l)
 
 			if e != nil {
 				return i, nil, e

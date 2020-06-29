@@ -101,5 +101,5 @@ func main() {
 		panic(err)
 	}
 
-	println(output) //<< should print the bytes
+	println(string(output)) //<< should be identical to the input
 }

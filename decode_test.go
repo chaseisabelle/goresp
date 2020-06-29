@@ -461,3 +461,76 @@ func TestDecode_Array_Empty(t *testing.T) {
 		t.Errorf("expect 0, got %d", l)
 	}
 }
+
+func TestDecode_Array_Nested(t *testing.T) {
+	bs := []byte("*2\r\n*1\r\n+foo\r\n*1\r\n+bar\r\n")
+	vs, e := Decode(bs)
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	l := len(vs)
+
+	if l != 1 {
+		t.Errorf("expect 1, got %d", l)
+	}
+
+	vs, e = vs[0].Array()
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	l = len(vs)
+
+	if l != 2 {
+		t.Errorf("expect 2, got %d", l)
+
+		return
+	}
+
+	a1, e := vs[0].Array()
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	a2, e := vs[1].Array()
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	s1, e := a1[0].String()
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	s2, e := a2[0].String()
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	if s1 != "foo" {
+		t.Errorf("expected foo, got %s", s1)
+	}
+
+	if s2 != "bar" {
+		t.Errorf("expected bar, go %s", s2)
+	}
+}
