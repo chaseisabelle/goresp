@@ -179,6 +179,57 @@ func TestEncode_Null_Success(t *testing.T) {
 	}
 }
 
+func TestEncode_Bool_Success(t *testing.T) {
+	bt := NewBool(true)
+	bf := NewBool(false)
+	bs, e := Encode([]Value{bt, bf})
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	vs, e := Decode(bs)
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	l := len(vs)
+
+	if l != 2 {
+		t.Errorf("expected 2, got %d", l)
+
+		return
+	}
+
+	b1, e1 := vs[0].Bool()
+	b2, e2 := vs[1].Bool()
+
+	if e1 != nil {
+		t.Error(e1)
+
+		return
+	}
+
+	if e2 != nil {
+		t.Error(e2)
+
+		return
+	}
+
+	if !b1 {
+		t.Error("expected true, got false")
+	}
+
+	if b2 {
+		t.Error("expected false, got true")
+	}
+}
+
 func TestEncode_Array_Success(t *testing.T) {
 	n1 := NewNull()
 	a1 := NewArray([]Value{n1})

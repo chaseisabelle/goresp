@@ -37,6 +37,10 @@ func (ss *SimpleString) Decode(bs []byte) error {
 	return nil
 }
 
+func (ss *SimpleString) Bool() (bool, error) {
+	return false, errors.New("cannot convert simple string to bool")
+}
+
 func (ss *SimpleString) Bytes() ([]byte, error) {
 	str, err := ss.String()
 

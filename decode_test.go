@@ -1,6 +1,7 @@
 package goresp
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"testing"
@@ -369,6 +370,45 @@ func TestDecode_Nil_Success(t *testing.T) {
 
 	if e != nil {
 		t.Error(e)
+	}
+}
+
+func TestDecode_Bool_Success(t *testing.T) {
+	bs := []byte{'<', '\r', '\n', '>', '\r', '\n'}
+	vs, e := Decode(bs)
+
+	if e != nil {
+		t.Error(e)
+
+		return
+	}
+
+	l := len(vs)
+
+	if l != 2 {
+		t.Errorf("expect 2, got %d", l)
+
+		return
+	}
+
+	b1, e := vs[0].Bool()
+
+	if e != nil {
+		t.Error(e)
+	}
+
+	b2, e := vs[1].Bool()
+
+	if e != nil {
+		t.Error(e)
+	}
+
+	if b1 != false {
+		t.Error(errors.New("expected false, got true"))
+	}
+
+	if b2 != true {
+		t.Error(errors.New("expected true, got false"))
 	}
 }
 

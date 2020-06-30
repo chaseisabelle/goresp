@@ -19,7 +19,6 @@ func decode(i int, bs []byte, m int) (int, []Value, error) {
 
 	vs := make([]Value, 0)
 	l := len(bs)
-	s := 0
 
 	for i := i; i < l; i++ {
 		t := len(vs)
@@ -42,37 +41,38 @@ func decode(i int, bs []byte, m int) (int, []Value, error) {
 
 		n = nil
 
-		switch s {
-		case 0:
-			switch b {
-			case '*':
-				i, v, e = decodeArray(i, bs)
-			case '+':
-				i, v, e = decodeSimpleString(i, bs)
-			case '$':
-				i, v, n, e = decodeBulkString(i, bs)
-			case '-':
-				i, v, e = decodeError(i, bs)
-			case ':':
-				i, v, e = decodeInteger(i, bs)
-			case '!':
-				i, v, e = decodeNil(i, bs)
-			case '.':
-				i, v, e = decodeFloat(i, bs)
-			default:
-				return i, nil, badByte("failed to parse input", b, i)
-			}
-
-			if e != nil {
-				return i, vs, e
-			}
-
-			if n != nil {
-				v = n
-			}
-
-			vs = append(vs, v)
+		switch b {
+		case '*':
+			i, v, e = decodeArray(i, bs)
+		case '+':
+			i, v, e = decodeSimpleString(i, bs)
+		case '$':
+			i, v, n, e = decodeBulkString(i, bs)
+		case '-':
+			i, v, e = decodeError(i, bs)
+		case ':':
+			i, v, e = decodeInteger(i, bs)
+		case '!':
+			i, v, e = decodeNil(i, bs)
+		case '.':
+			i, v, e = decodeFloat(i, bs)
+		case '<':
+			fallthrough
+		case '>':
+			i, v, e = decodeBool(i, bs)
+		default:
+			return i, nil, badByte("failed to parse input", b, i)
 		}
+
+		if e != nil {
+			return i, vs, e
+		}
+
+		if n != nil {
+			v = n
+		}
+
+		vs = append(vs, v)
 	}
 
 	return l, vs, nil
@@ -401,6 +401,44 @@ func decodeNil(i int, bs []byte) (int, *Nil, error) {
 	}
 
 	return len(bs), nil, badEOI("failed to parse nil")
+}
+
+func decodeBool(i int, bs []byte) (int, *Bool, error) {
+	s := 0
+	t := false
+
+	for i := i; i < len(bs); i++ {
+		b := bs[i]
+
+		switch s {
+		case 0:
+			switch b {
+			case '<':
+			case '>':
+				t = true
+			default:
+				return i, nil, badByte("failed to parse bool identifier", b, i)
+			}
+
+			s = 1
+		case 1:
+			if b != '\r' {
+				return i, nil, badByte("failed to parse bool delimiter", b, i)
+			}
+
+			s = 2
+		case 2:
+			if b != '\n' {
+				return i, nil, badByte("failed to parse bool delimiter", b, i)
+			}
+
+			return i, NewBool(t), nil
+		default:
+			return i, nil, fmt.Errorf("failed to parse bool: invalid state %d", s)
+		}
+	}
+
+	return len(bs), nil, badEOI("failed to parse bool")
 }
 
 func badByte(s string, b byte, i int) error {

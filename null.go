@@ -27,6 +27,10 @@ func (n *Null) Decode(bs []byte) error {
 	return nil
 }
 
+func (n *Null) Bool() (bool, error) {
+	return false, errors.New("cannot convert null to bool")
+}
+
 func (n *Null) Bytes() ([]byte, error) {
 	return nil, errors.New("cannot convert null to bytes")
 }

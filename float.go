@@ -42,6 +42,10 @@ func (f *Float) Decode(bs []byte) error {
 	return nil
 }
 
+func (f *Float) Bool() (bool, error) {
+	return false, errors.New("cannot convert float to bool")
+}
+
 func (f *Float) Bytes() ([]byte, error) {
 	s, e := f.String()
 

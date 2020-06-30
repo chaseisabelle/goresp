@@ -54,6 +54,10 @@ func (bs *BulkString) Bytes() ([]byte, error) {
 	return []byte(s), e
 }
 
+func (bs *BulkString) Bool() (bool, error) {
+	return false, errors.New("cannot convert bulk string to bool")
+}
+
 func (bs *BulkString) String() (string, error) {
 	return bs.internal, nil
 }

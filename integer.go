@@ -42,6 +42,16 @@ func (i *Integer) Decode(bs []byte) error {
 	return nil
 }
 
+func (i *Integer) Bool() (bool, error) {
+	b := false
+
+	if i.internal != 0 {
+		b = true
+	}
+
+	return b, nil
+}
+
 func (i *Integer) Bytes() ([]byte, error) {
 	s, e := i.String()
 

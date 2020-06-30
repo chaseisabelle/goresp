@@ -39,6 +39,10 @@ func (e *Error) Decode(bs []byte) error {
 	return nil
 }
 
+func (e *Error) Bool() (bool, error) {
+	return false, errors.New("cannot convert error to bool")
+}
+
 func (e *Error) Bytes() ([]byte, error) {
 	s, err := e.String()
 

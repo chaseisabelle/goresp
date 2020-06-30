@@ -58,6 +58,10 @@ func (a *Array) Decode(bs []byte) error {
 	return nil
 }
 
+func (a *Array) Bool() (bool, error) {
+	return false, errors.New("cannot convert array to bool")
+}
+
 func (a *Array) Bytes() ([]byte, error) {
 	return nil, errors.New("cannot convert array to bytes")
 }
