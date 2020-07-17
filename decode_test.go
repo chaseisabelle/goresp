@@ -154,7 +154,7 @@ func TestDecode_Integer_Success(t *testing.T) {
 		return
 	}
 
-	n, e := vs[0].Integer()
+	n, e := vs[0].Int()
 
 	if e != nil {
 		t.Error(e)
@@ -186,7 +186,7 @@ func TestDecode_Integer_Negative(t *testing.T) {
 		return
 	}
 
-	n, e := vs[0].Integer()
+	n, e := vs[0].Int()
 
 	if e != nil {
 		t.Error(e)
@@ -218,7 +218,7 @@ func TestDecode_Float_Success(t *testing.T) {
 		return
 	}
 
-	n, e := vs[0].Float()
+	n, e := vs[0].Float64()
 
 	if e != nil {
 		t.Error(e)
@@ -250,7 +250,7 @@ func TestDecode_Float_Negative(t *testing.T) {
 		return
 	}
 
-	n, e := vs[0].Float()
+	n, e := vs[0].Float64()
 
 	if e != nil {
 		t.Error(e)
@@ -454,7 +454,7 @@ func TestDecode_Array_Success(t *testing.T) {
 		return
 	}
 
-	i2, e := vs[1].Integer()
+	i2, e := vs[1].Int()
 
 	if e != nil {
 		t.Error(e)

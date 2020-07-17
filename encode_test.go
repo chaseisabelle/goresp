@@ -102,8 +102,8 @@ func TestEncode_Integer_Success(t *testing.T) {
 	}
 
 	i2 := vs[0]
-	_, n1 := i1.Integer()
-	_, n2 := i2.Integer()
+	_, n1 := i1.Int()
+	_, n2 := i2.Int()
 
 	if n1 != n1 {
 		t.Errorf("expected %d, got %d", n1, n2)

@@ -3,6 +3,7 @@ package goresp
 import (
 	"errors"
 	"strconv"
+	"time"
 )
 
 type SimpleString struct {
@@ -51,7 +52,37 @@ func (ss *SimpleString) String() (string, error) {
 	return ss.internal, nil
 }
 
-func (ss *SimpleString) Integer() (int, error) {
+func (ss *SimpleString) Uint() (uint, error) {
+	i, e := ss.Int()
+
+	return uint(i), e
+}
+
+func (ss *SimpleString) Uint8() (uint8, error) {
+	i, e := ss.Int()
+
+	return uint8(i), e
+}
+
+func (ss *SimpleString) Uint16() (uint16, error) {
+	i, e := ss.Int()
+
+	return uint16(i), e
+}
+
+func (ss *SimpleString) Uint32() (uint32, error) {
+	i, e := ss.Int()
+
+	return uint32(i), e
+}
+
+func (ss *SimpleString) Uint64() (uint64, error) {
+	i, e := ss.Int()
+
+	return uint64(i), e
+}
+
+func (ss *SimpleString) Int() (int, error) {
 	str, err := ss.String()
 
 	if err != nil {
@@ -61,7 +92,25 @@ func (ss *SimpleString) Integer() (int, error) {
 	return strconv.Atoi(str)
 }
 
-func (ss *SimpleString) Float() (float64, error) {
+func (ss *SimpleString) Int32() (int32, error) {
+	x, e := ss.Int()
+
+	return int32(x), e
+}
+
+func (ss *SimpleString) Int64() (int64, error) {
+	x, e := ss.Int()
+
+	return int64(x), e
+}
+
+func (ss *SimpleString) Float32() (float32, error) {
+	f64, e := ss.Float64()
+
+	return float32(f64), e
+}
+
+func (ss *SimpleString) Float64() (float64, error) {
 	str, err := ss.String()
 
 	if err != nil {
@@ -79,6 +128,26 @@ func (ss *SimpleString) Error() (error, error) {
 
 func (ss *SimpleString) Array() ([]Value, error) {
 	return nil, errors.New("cannot convert simple string to array")
+}
+
+func (ss *SimpleString) Time(l string) (time.Time, error) {
+	s, e := ss.String()
+
+	if e != nil {
+		return time.Now(), e
+	}
+
+	return time.Parse(l, s)
+}
+
+func (ss *SimpleString) Duration(d time.Duration) (time.Duration, error) {
+	s, e := ss.String()
+
+	if e != nil {
+		return d, e
+	}
+
+	return time.ParseDuration(s)
 }
 
 func (ss *SimpleString) Null() error {

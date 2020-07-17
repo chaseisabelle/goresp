@@ -49,7 +49,7 @@ func main() {
 		panic(err)
 	}
 
-	i, err := integer.Integer()
+	i, err := integer.Int()
 
 	if err != nil {
 		panic(err)
@@ -71,13 +71,13 @@ func main() {
 		panic(err)
 	}
 
-	for _, v := range a {
-		s, err := v.String()
+	ss, err := goresp.Strings(a)
 
-		if err != nil {
-			panic(err)
-		}
+	if err != nil {
+		panic(err)
+	}
 
+	for _, s := range ss {
 		println(s) //<< should print a, b, c
 	}
 
@@ -87,7 +87,7 @@ func main() {
 		panic(err)
 	}
 
-	f, err := decimal.Float()
+	f, err := decimal.Float64()
 
 	if err != nil {
 		panic(err)

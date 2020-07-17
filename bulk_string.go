@@ -3,6 +3,7 @@ package goresp
 import (
 	"errors"
 	"strconv"
+	"time"
 )
 
 type BulkString struct {
@@ -62,7 +63,37 @@ func (bs *BulkString) String() (string, error) {
 	return bs.internal, nil
 }
 
-func (bs *BulkString) Integer() (int, error) {
+func (bs *BulkString) Uint() (uint, error) {
+	i, e := bs.Int()
+
+	return uint(i), e
+}
+
+func (bs *BulkString) Uint8() (uint8, error) {
+	i, e := bs.Int()
+
+	return uint8(i), e
+}
+
+func (bs *BulkString) Uint16() (uint16, error) {
+	i, e := bs.Int()
+
+	return uint16(i), e
+}
+
+func (bs *BulkString) Uint32() (uint32, error) {
+	i, e := bs.Int()
+
+	return uint32(i), e
+}
+
+func (bs *BulkString) Uint64() (uint64, error) {
+	i, e := bs.Int()
+
+	return uint64(i), e
+}
+
+func (bs *BulkString) Int() (int, error) {
 	str, err := bs.String()
 
 	if err != nil {
@@ -72,7 +103,25 @@ func (bs *BulkString) Integer() (int, error) {
 	return strconv.Atoi(str)
 }
 
-func (bs *BulkString) Float() (float64, error) {
+func (bs *BulkString) Int32() (int32, error) {
+	x, e := bs.Int()
+
+	return int32(x), e
+}
+
+func (bs *BulkString) Int64() (int64, error) {
+	x, e := bs.Int()
+
+	return int64(x), e
+}
+
+func (bs *BulkString) Float32() (float32, error) {
+	f64, e := bs.Float64()
+
+	return float32(f64), e
+}
+
+func (bs *BulkString) Float64() (float64, error) {
 	str, err := bs.String()
 
 	if err != nil {
@@ -90,6 +139,26 @@ func (bs *BulkString) Error() (error, error) {
 
 func (bs *BulkString) Array() ([]Value, error) {
 	return nil, errors.New("cannot convert bulk string to array")
+}
+
+func (bs *BulkString) Time(l string) (time.Time, error) {
+	s, e := bs.String()
+
+	if e != nil {
+		return time.Now(), e
+	}
+
+	return time.Parse(l, s)
+}
+
+func (bs *BulkString) Duration(d time.Duration) (time.Duration, error) {
+	s, e := bs.String()
+
+	if e != nil {
+		return d, e
+	}
+
+	return time.ParseDuration(s)
 }
 
 func (bs *BulkString) Null() error {
